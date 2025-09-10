@@ -1,0 +1,58 @@
+// Datasource
+ datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+ }
+
+ // Generator
+ generator client {
+  provider = "prisma-client-js"
+ }
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  name         String
+  price        Int
+  image        String?
+  brand        String
+  description  String?
+  gender       String?
+  sizes        String?  // JSON string olarak saklanacak [36,37,38,...]
+  stockBySize  String?  // JSON string olarak saklanacak {"40":5,"41":2,...}
+  discount     Int      @default(0)
+  campaign     String?  // Kampanya kategorisi
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  OrderItem    OrderItem[]
+}
+
+ model Order {
+  id          String     @id
+  fullName    String
+  phone       String
+  email       String?
+  address     String
+  city        String
+  district    String
+  note        String?
+  payment     String
+  subtotal    Int
+  shipping    Int
+  total       Int
+  status      String     @default("yeni")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  items       OrderItem[]
+ }
+
+ model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   String
+  productId Int?
+  name      String
+  price     Int
+  quantity  Int
+  size      String?
+  Order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  Product   Product? @relation(fields: [productId], references: [id])
+ }
